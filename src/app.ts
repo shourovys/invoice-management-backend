@@ -11,9 +11,13 @@ const app: Application = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// parse
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 // Routes
 app.get('/', (req, res) => {
-  res.send('Welcome to the Car Invoicing System API');
+  res.send('Welcome to the Invoicing System API');
 });
 
 // Use routes
