@@ -6,9 +6,15 @@ import { IInvoice } from './invoice.interface'
 type IInvoiceModel = mongoose.Model<IInvoice & Document>
 
 const invoiceSchema = new Schema<IInvoice>({
-  agentId: {
-    type: String,
-    required: true,
+  agent: {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
   product: [
     {

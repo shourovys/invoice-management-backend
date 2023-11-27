@@ -11,7 +11,15 @@ export const InvoiceController = {
   ) => {
     try {
       const { userId } = req.params
-      const invoices = await InvoiceService.getAllInvoicesForAgent(userId)
+      const { invoiceId, productName } = req.query as {
+        invoiceId?: string
+        productName?: string
+      }
+      const invoices = await InvoiceService.getAllInvoicesForAgent(
+        userId,
+        invoiceId,
+        productName,
+      )
       res.json(invoices)
     } catch (error) {
       next(error)
@@ -30,8 +38,8 @@ export const InvoiceController = {
 
   getInvoiceById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId, invoiceId } = req.params
-      const invoice = await InvoiceService.getInvoiceById(userId, invoiceId)
+      const { invoiceId } = req.params
+      const invoice = await InvoiceService.getInvoiceById(invoiceId)
       res.json(invoice)
     } catch (error) {
       next(error)
@@ -40,9 +48,8 @@ export const InvoiceController = {
 
   updateInvoice: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId, invoiceId } = req.params
+      const { invoiceId } = req.params
       const updatedInvoice = await InvoiceService.updateInvoice(
-        userId,
         invoiceId,
         req.body,
       )
@@ -54,8 +61,8 @@ export const InvoiceController = {
 
   deleteInvoice: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId, invoiceId } = req.params
-      await InvoiceService.deleteInvoice(userId, invoiceId)
+      const { invoiceId } = req.params
+      await InvoiceService.deleteInvoice(invoiceId)
       res.json({ message: 'Invoice deleted successfully' })
     } catch (error) {
       next(error)
@@ -64,7 +71,19 @@ export const InvoiceController = {
 
   getAllInvoices: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const invoices = await InvoiceService.getAllInvoices()
+      const { invoiceId, productName, agentName, sellerName } = req.query as {
+        invoiceId?: string
+        productName?: string
+        agentName?: string
+        sellerName?: string
+      }
+
+      const invoices = await InvoiceService.getAllInvoices(
+        invoiceId,
+        productName,
+        agentName,
+        sellerName,
+      )
       res.json(invoices)
     } catch (error) {
       next(error)

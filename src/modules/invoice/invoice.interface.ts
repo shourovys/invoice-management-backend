@@ -4,7 +4,10 @@ import { IUser } from '../user/user.interface'
 
 export interface IInvoice {
   id: string
-  agentId: IUser['id']
+  agent: {
+    id: IUser['id']
+    name: IUser['name']
+  }
   product: {
     name: string
     code: string
