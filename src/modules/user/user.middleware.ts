@@ -4,8 +4,6 @@ import { IMiddlewareFunction } from '../../type'
 import { UserService } from './user.service'
 import { verifyToken } from './user.utils'
 
-// Utility function to verify and decode JWT token
-
 // Middleware to check if the user is an admin
 export const isAdmin: IMiddlewareFunction = async (req, res, next) => {
   const decodedUserId = await verifyToken(req, res)
@@ -16,7 +14,7 @@ export const isAdmin: IMiddlewareFunction = async (req, res, next) => {
     if (fetchedUser && fetchedUser.role !== 'admin') {
       res.status(403).json({ message: 'Forbidden: User is not an admin' })
     } else {
-      // req.user = { id: decodedUserId } as { id: string }
+      req.params.userId = decodedUserId
       next()
     }
   }
@@ -25,14 +23,17 @@ export const isAdmin: IMiddlewareFunction = async (req, res, next) => {
 // Middleware to check if the same user is requesting to update their account
 export const isSameUser: IMiddlewareFunction = async (req, res, next) => {
   const decodedUserId = await verifyToken(req, res)
+  if (decodedUserId) {
+    const fetchedUser = await UserService.getUserById(decodedUserId)
 
-  if (decodedUserId && decodedUserId !== req.params.userId) {
-    res.status(403).json({
-      message: 'Forbidden: User is not authorized to perform this action',
-    })
-  } else {
-    // req.user = { id: decodedUserId } as { id: string }
-    next()
+    if (fetchedUser) {
+      res.status(403).json({
+        message: 'Forbidden: User is not authorized to perform this action',
+      })
+    } else {
+      req.params.userId = decodedUserId
+      next()
+    }
   }
 }
 
@@ -47,10 +48,8 @@ export const isAdminOrSameUser: IMiddlewareFunction = async (
   if (decodedUserId) {
     const fetchedUser = await UserService.getUserById(decodedUserId)
 
-    if (
-      (fetchedUser && fetchedUser.role !== 'admin') ||
-      decodedUserId === req.params.userId
-    ) {
+    if ((fetchedUser && fetchedUser.role === 'admin') || decodedUserId) {
+      req.params.userId = decodedUserId
       next()
     } else {
       res.status(403).json({
