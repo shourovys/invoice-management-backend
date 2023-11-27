@@ -38,4 +38,8 @@ export const InvoiceService = {
   deleteInvoice: async (agentId: string, invoiceId: string): Promise<void> => {
     await InvoiceModel.findOneAndDelete({ _id: invoiceId, agentId }).exec()
   },
+
+  getAllInvoices: async (): Promise<IInvoice[]> => {
+    return InvoiceModel.find().exec()
+  },
 }

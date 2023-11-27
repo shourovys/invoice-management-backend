@@ -1,7 +1,7 @@
 // src/modules/invoice/invoice.route.ts
 
 import express from 'express'
-import { isAdminOrSameUser } from '../user/user.middleware'
+import { isAdmin, isAdminOrSameUser } from '../user/user.middleware'
 import { InvoiceController } from './invoice.controller'
 
 const invoiceRouter = express.Router({ mergeParams: true })
@@ -31,5 +31,8 @@ invoiceRouter.delete(
   isAdminOrSameUser,
   InvoiceController.deleteInvoice,
 )
+
+// New route for admin to get all invoices
+invoiceRouter.get('/all', isAdmin, InvoiceController.getAllInvoices)
 
 export default invoiceRouter

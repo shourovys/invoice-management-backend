@@ -61,4 +61,13 @@ export const InvoiceController = {
       next(error)
     }
   },
+
+  getAllInvoices: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const invoices = await InvoiceService.getAllInvoices()
+      res.json(invoices)
+    } catch (error) {
+      next(error)
+    }
+  },
 }
