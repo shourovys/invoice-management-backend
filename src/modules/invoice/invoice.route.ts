@@ -32,7 +32,7 @@ invoiceRouter.delete(
   InvoiceController.deleteInvoice,
 )
 
-// New route for admin to get all invoices
+// New route for admin --> all invoices action
 invoiceRouter.get('/all', isAdmin, InvoiceController.getAllInvoices)
 
 export default invoiceRouter

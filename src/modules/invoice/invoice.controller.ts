@@ -71,16 +71,19 @@ export const InvoiceController = {
 
   getAllInvoices: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { invoiceId, productName, agentName, sellerName } = req.query as {
-        invoiceId?: string
-        productName?: string
-        agentName?: string
-        sellerName?: string
-      }
+      const { invoiceId, productName, agentName, agentId, sellerName } =
+        req.query as {
+          invoiceId?: string
+          productName?: string
+          agentId?: string
+          agentName?: string
+          sellerName?: string
+        }
 
       const invoices = await InvoiceService.getAllInvoices(
         invoiceId,
         productName,
+        agentId,
         agentName,
         sellerName,
       )

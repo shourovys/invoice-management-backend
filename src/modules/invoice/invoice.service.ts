@@ -71,6 +71,7 @@ export const InvoiceService = {
   getAllInvoices: async (
     invoiceId?: string,
     productName?: string,
+    agentId?: string,
     agentName?: string,
     sellerName?: string,
   ): Promise<IInvoice[]> => {
@@ -82,6 +83,10 @@ export const InvoiceService = {
 
     if (productName) {
       query['product.name'] = { $regex: new RegExp(`${productName}`, 'i') }
+    }
+
+    if (agentId) {
+      query['agent.id'] = agentId
     }
 
     if (agentName) {

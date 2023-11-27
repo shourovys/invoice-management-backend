@@ -6,8 +6,36 @@ import { UserModel } from './user.model'
 import { generateUserNumber } from './user.utils'
 
 export const UserService = {
-  getAllUsers: async (): Promise<IUser[]> => {
-    return await UserModel.find().exec()
+  getAllUsers: async (
+    role?: string,
+    no?: number,
+    name?: string,
+    email?: string,
+    contactNumber?: string,
+  ): Promise<IUser[]> => {
+    const query: Record<string, unknown> = {}
+
+    if (role) {
+      query.role = role
+    }
+
+    if (no) {
+      query.no = no
+    }
+
+    if (name) {
+      query.name = { $regex: new RegExp(`${name}`, 'i') }
+    }
+
+    if (email) {
+      query.email = { $regex: new RegExp(`${email}`, 'i') }
+    }
+
+    if (contactNumber) {
+      query.contactNumber = { $regex: new RegExp(`${contactNumber}`, 'i') }
+    }
+
+    return UserModel.find(query).exec()
   },
 
   createUser: async (userData: IUser): Promise<IUser> => {
