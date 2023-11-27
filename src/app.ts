@@ -3,7 +3,7 @@ import cors from 'cors'
 import express, { Application, Request, Response } from 'express'
 
 // modules
-import agentRoutes from './modules/agent.routes'
+import userRouter from './modules/user/user.route'
 
 const app: Application = express()
 
@@ -21,6 +21,6 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 // Use routes
-app.use('/api', agentRoutes)
+app.use('/api/user', userRouter)
 
 export default app
