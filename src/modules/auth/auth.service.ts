@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { JWT_SECRET_KEY } from '../../config'
 import { IUser } from '../user/user.interface'
 import { UserModel } from '../user/user.model'
 
@@ -22,7 +23,7 @@ export const AuthService = {
       throw new Error('Invalid credentials')
     }
 
-    const token = jwt.sign({ id: user.id }, 'your-secret-key', {
+    const token = jwt.sign({ id: user.id }, JWT_SECRET_KEY, {
       expiresIn: '1000h',
     })
 

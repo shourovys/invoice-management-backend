@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { JWT_SECRET_KEY } from '../../config'
 import { UserModel } from './user.model'
 
 export const verifyToken = async (
@@ -14,7 +15,7 @@ export const verifyToken = async (
   }
 
   try {
-    const decodedUserId = jwt.verify(token, 'your-secret-key') as string // Replace 'your-secret-key' with your actual secret key
+    const decodedUserId = jwt.verify(token, JWT_SECRET_KEY) as string
     return decodedUserId
   } catch (error) {
     res.status(401).json({ message: 'Unauthorized: Invalid token' })
