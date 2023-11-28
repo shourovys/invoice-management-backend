@@ -26,7 +26,7 @@ export const isSameUser: IMiddlewareFunction = async (req, res, next) => {
   if (decodedUserId) {
     const fetchedUser = await UserService.getUserById(decodedUserId)
 
-    if (fetchedUser) {
+    if (!fetchedUser) {
       res.status(403).json({
         message: 'Forbidden: User is not authorized to perform this action',
       })

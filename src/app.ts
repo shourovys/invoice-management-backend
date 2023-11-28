@@ -10,7 +10,13 @@ import userRouter from './modules/user/user.route'
 const app: Application = express()
 
 // Middleware
-app.use(cors())
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://another-allowed-origin.com'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }),
+)
 app.use(bodyParser.json())
 
 // parse

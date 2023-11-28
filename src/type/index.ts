@@ -14,3 +14,10 @@ export type IMiddlewareFunction = (
   res: Response,
   next: NextFunction,
 ) => void
+
+export interface IApiQueryParamsBase {
+  offset?: number
+  limit?: number
+  sort_by?: string
+  order?: 'asc' | 'desc'
+}

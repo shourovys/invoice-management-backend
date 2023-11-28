@@ -5,35 +5,39 @@ import { IInvoice } from './invoice.interface'
 
 type IInvoiceModel = mongoose.Model<IInvoice & Document>
 
-const invoiceSchema = new Schema<IInvoice>({
-  agent: {
-    id: {
-      type: String,
-      required: true,
+const invoiceSchema = new Schema<IInvoice>(
+  {
+    agent: {
+      id: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
     },
-    name: {
-      type: String,
-      required: true,
-    },
-  },
-  product: [
-    {
+    product: [
+      {
+        id: { type: String, required: true },
+        name: { type: String, required: true },
+        code: { type: String, required: true },
+        description: { type: String },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+      },
+    ],
+    sellerInfo: {
       name: { type: String, required: true },
-      code: { type: String, required: true },
-      description: { type: String },
-      price: { type: Number, required: true },
-      quantity: { type: Number, required: true },
+      email: { type: String, required: true },
+      contactNumber: { type: String, required: true },
     },
-  ],
-  sellerInfo: {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    contactNumber: { type: String, required: true },
+    status: { type: String },
   },
-  status: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-})
+  {
+    timestamps: true,
+  },
+)
 
 export const InvoiceModel = mongoose.model<IInvoice, IInvoiceModel>(
   'Invoice',

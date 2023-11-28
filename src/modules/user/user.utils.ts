@@ -7,7 +7,7 @@ export const verifyToken = async (
   req: Request,
   res: Response,
 ): Promise<string | null> => {
-  const token = req.header('x-auth-token') as string | undefined
+  const token = req.header('Authorization') as string | undefined
 
   if (!token) {
     res.status(401).json({ message: 'Unauthorized: No token provided' })
@@ -15,8 +15,10 @@ export const verifyToken = async (
   }
 
   try {
-    const decodedUserId = jwt.verify(token, JWT_SECRET_KEY) as string
-    return decodedUserId
+    const decodedUserId = jwt.verify(token.split(' ')[1], JWT_SECRET_KEY) as {
+      id: string
+    }
+    return decodedUserId.id
   } catch (error) {
     res.status(401).json({ message: 'Unauthorized: Invalid token' })
     return null

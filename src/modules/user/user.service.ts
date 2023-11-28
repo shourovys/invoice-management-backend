@@ -1,50 +1,77 @@
 // src/modules/user/user.service.ts
-
+import bcrypt from 'bcrypt'
 import { DEFAULT_AGENT_PASSWORD } from '../../config'
+import { IApiQueryParamsBase } from '../../type'
 import { IUser } from './user.interface'
 import { UserModel } from './user.model'
 import { generateUserNumber } from './user.utils'
 
+interface IAllUserQuery extends IApiQueryParamsBase {
+  no?: number
+  role?: string
+  name?: string
+  email?: string
+}
+
 export const UserService = {
   getAllUsers: async (
-    role?: string,
-    no?: number,
-    name?: string,
-    email?: string,
-    contactNumber?: string,
-  ): Promise<IUser[]> => {
-    const query: Record<string, unknown> = {}
+    query: IAllUserQuery,
+  ): Promise<{ data: IUser[]; count: number }> => {
+    const {
+      offset = 0,
+      limit = 10,
+      sort_by = 'no',
+      order = 'asc',
+      no,
+      role,
+      name,
+      email,
+    } = query
 
-    if (role) {
-      query.role = role
-    }
+    const filter: Record<string, unknown> = {}
 
     if (no) {
-      query.no = no
+      filter.no = no
+    }
+
+    if (role) {
+      filter.role = role
     }
 
     if (name) {
-      query.name = { $regex: new RegExp(`${name}`, 'i') }
+      filter.name = { $regex: new RegExp(`${name}`, 'i') }
     }
 
     if (email) {
-      query.email = { $regex: new RegExp(`${email}`, 'i') }
+      filter.email = { $regex: new RegExp(`${email}`, 'i') }
     }
 
-    if (contactNumber) {
-      query.contactNumber = { $regex: new RegExp(`${contactNumber}`, 'i') }
-    }
+    const sortDirection = order === 'asc' ? 1 : -1
 
-    return UserModel.find(query).exec()
+    const [users, count] = await Promise.all([
+      UserModel.find(filter)
+        .sort({ [sort_by]: sortDirection })
+        .skip(offset)
+        .limit(limit)
+        .exec(),
+      UserModel.countDocuments().exec(),
+    ])
+
+    return { data: users, count }
   },
 
   createUser: async (userData: IUser): Promise<IUser> => {
     const userNo = await generateUserNumber()
 
+    const hashedPassword = await bcrypt.hash(
+      userData.password || DEFAULT_AGENT_PASSWORD,
+      10,
+    )
+
     const user = new UserModel({
       ...userData,
       no: userNo,
-      ...(!userData.password && { password: DEFAULT_AGENT_PASSWORD }),
+      password: hashedPassword,
     })
 
     return await user.save()
@@ -65,5 +92,32 @@ export const UserService = {
 
   deleteUser: async (userId: string): Promise<void> => {
     await UserModel.findByIdAndDelete(userId).exec()
+  },
+
+  checkPassword: async (userId: string, password: string): Promise<boolean> => {
+    const user = await UserModel.findById(userId).exec()
+
+    if (!user) {
+      return false
+    }
+
+    return bcrypt.compare(password, user.password)
+  },
+
+  updateUserProfile: async (
+    userId: string,
+    updateData: Partial<IUser>,
+  ): Promise<void> => {
+    await UserModel.findByIdAndUpdate(userId, updateData).exec()
+  },
+
+  updateUserPassword: async (
+    userId: string,
+    newPassword: string,
+  ): Promise<void> => {
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    await UserModel.findByIdAndUpdate(userId, {
+      password: hashedPassword,
+    }).exec()
   },
 }

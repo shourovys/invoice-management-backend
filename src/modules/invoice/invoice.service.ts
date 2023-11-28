@@ -1,8 +1,17 @@
 // src/modules/invoice/invoice.service.ts
 
+import { IApiQueryParamsBase } from '../../type'
 import { UserModel } from '../user/user.model'
 import { IInvoice } from './invoice.interface'
 import { InvoiceModel } from './invoice.model'
+
+interface IAllUserQuery extends IApiQueryParamsBase {
+  invoiceId?: string
+  productName?: string
+  agentId?: string
+  agentName?: string
+  sellerName?: string
+}
 
 export const InvoiceService = {
   getAllInvoicesForAgent: async (
@@ -69,34 +78,53 @@ export const InvoiceService = {
   },
 
   getAllInvoices: async (
-    invoiceId?: string,
-    productName?: string,
-    agentId?: string,
-    agentName?: string,
-    sellerName?: string,
-  ): Promise<IInvoice[]> => {
-    const query: Record<string, unknown> = {}
+    query: IAllUserQuery,
+  ): Promise<{ data: IInvoice[]; count: number }> => {
+    const {
+      offset = 0,
+      limit = 10,
+      sort_by = 'createdAt',
+      order = 'asc',
+      invoiceId,
+      productName,
+      agentId,
+      agentName,
+      sellerName,
+    } = query
+
+    const filter: Record<string, unknown> = {}
 
     if (invoiceId) {
-      query._id = invoiceId
+      filter._id = invoiceId
     }
 
     if (productName) {
-      query['product.name'] = { $regex: new RegExp(`${productName}`, 'i') }
+      filter['product.name'] = { $regex: new RegExp(`${productName}`, 'i') }
     }
 
     if (agentId) {
-      query['agent.id'] = agentId
+      filter['agent.id'] = agentId
     }
 
     if (agentName) {
-      query['agent.name'] = { $regex: new RegExp(agentName, 'i') }
+      filter['agent.name'] = { $regex: new RegExp(agentName, 'i') }
     }
 
     if (sellerName) {
-      query['sellerInfo.name'] = { $regex: new RegExp(`${sellerName}`, 'i') }
+      filter['sellerInfo.name'] = { $regex: new RegExp(`${sellerName}`, 'i') }
     }
 
-    return InvoiceModel.find(query).exec()
+    const sortDirection = order === 'asc' ? 1 : -1
+
+    const [invoices, count] = await Promise.all([
+      InvoiceModel.find(filter)
+        .sort({ [sort_by]: sortDirection })
+        .skip(offset)
+        .limit(limit)
+        .exec(),
+      InvoiceModel.countDocuments().exec(),
+    ])
+
+    return { data: invoices, count }
   },
 }

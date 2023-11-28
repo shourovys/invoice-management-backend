@@ -20,7 +20,7 @@ export const InvoiceController = {
         invoiceId,
         productName,
       )
-      res.json(invoices)
+      res.json({ data: invoices })
     } catch (error) {
       next(error)
     }
@@ -40,7 +40,7 @@ export const InvoiceController = {
     try {
       const { invoiceId } = req.params
       const invoice = await InvoiceService.getInvoiceById(invoiceId)
-      res.json(invoice)
+      res.json({ data: invoice })
     } catch (error) {
       next(error)
     }
@@ -71,23 +71,8 @@ export const InvoiceController = {
 
   getAllInvoices: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { invoiceId, productName, agentName, agentId, sellerName } =
-        req.query as {
-          invoiceId?: string
-          productName?: string
-          agentId?: string
-          agentName?: string
-          sellerName?: string
-        }
-
-      const invoices = await InvoiceService.getAllInvoices(
-        invoiceId,
-        productName,
-        agentId,
-        agentName,
-        sellerName,
-      )
-      res.json(invoices)
+      const data = await InvoiceService.getAllInvoices(req.query)
+      res.json(data)
     } catch (error) {
       next(error)
     }

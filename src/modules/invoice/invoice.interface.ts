@@ -3,12 +3,13 @@
 import { IUser } from '../user/user.interface'
 
 export interface IInvoice {
-  id: string
+  _id: string
   agent: {
     id: IUser['id']
     name: IUser['name']
   }
   product: {
+    id: string
     name: string
     code: string
     description: string

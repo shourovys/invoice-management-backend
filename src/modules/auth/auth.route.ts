@@ -5,6 +5,7 @@ import { isAuthenticated } from './auth.middleware'
 const authRoute = express.Router()
 
 authRoute.post('/login', AuthController.login)
-authRoute.post('/logout', isAuthenticated, AuthController.logout)
+authRoute.get('/logout', isAuthenticated, AuthController.logout)
+authRoute.put('/profile', isAuthenticated, AuthController.updateProfile)
 
 export default authRoute

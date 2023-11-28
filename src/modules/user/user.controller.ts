@@ -5,8 +5,8 @@ import { UserService } from './user.service'
 export const UserController = {
   getAllUsers: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await UserService.getAllUsers()
-      res.json(users)
+      const data = await UserService.getAllUsers(req.query)
+      res.json(data)
     } catch (error) {
       next(error)
     }
@@ -15,7 +15,7 @@ export const UserController = {
   createUser: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const newUser = await UserService.createUser(req.body)
-      res.status(201).json(newUser)
+      res.status(201).json({ data: newUser })
     } catch (error) {
       next(error)
     }
@@ -24,7 +24,7 @@ export const UserController = {
   getUserById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await UserService.getUserById(req.params.userId)
-      res.json(user)
+      res.json({ data: user })
     } catch (error) {
       next(error)
     }
@@ -36,7 +36,7 @@ export const UserController = {
         req.params.userId,
         req.body,
       )
-      res.json(updatedUser)
+      res.json({ data: updatedUser })
     } catch (error) {
       next(error)
     }
