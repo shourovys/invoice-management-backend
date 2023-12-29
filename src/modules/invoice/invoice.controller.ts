@@ -1,6 +1,7 @@
 // src/modules/invoice/invoice.controller.ts
 
 import { NextFunction, Request, Response } from 'express'
+import { UserService } from '../user/user.service'
 import { InvoiceService } from './invoice.service'
 
 export const InvoiceController = {
@@ -40,7 +41,8 @@ export const InvoiceController = {
     try {
       const { invoiceId } = req.params
       const invoice = await InvoiceService.getInvoiceById(invoiceId)
-      res.json({ data: invoice })
+      const agent = await UserService.getUserById(invoice?.agent.id || '')
+      res.json({ data: { invoice, agent: agent } })
     } catch (error) {
       next(error)
     }
